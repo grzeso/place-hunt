@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  php:
+    build: .
+    container_name: symfony_app
+    ports:
+      - "8080:80" # Apache w kontenerze dostępny na localhost:8080
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: symfony_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: symfony123
+    ports:
+      - "3307:3306" # port zmieniony, żeby nie kolidował z XAMPP
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: symfony_pma
+    restart: always
+    ports:
+      - "8081:80" # phpMyAdmin dostępny na localhost:8081
+    environment:
+      PMA_HOST: db
+      PMA_USER: symfony
+      PMA_PASSWORD: symfony123
+    depends_on:
+      - db
+
+volumes:
+  db_data:
